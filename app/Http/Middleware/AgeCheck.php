@@ -4,21 +4,21 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Article; // Import the Article model
-use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Models\UserArticle;
 
 class AgeCheck
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next)
     {
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
+        $user = $request->attributes->get('authenticated_user');
 
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+
+        if ($request->route('id')) {
             $articleId = $request->route('id');
-            $article = Article::find($articleId);
+            $article = UserArticle::find($articleId);
 
             if (!$article) {
                 return response()->json(['error' => 'Article not found'], 404);
@@ -27,8 +27,11 @@ class AgeCheck
             if ($user->age < $article->age_rating) {
                 return response()->json(['error' => 'You are not allowed to access this article due to age restrictions'], 403);
             }
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Token not valid or user authentication failed'], 401);
+
+            $request->attributes->set('article', $article);
+        } else {
+            $allowedArticles = UserArticle::where('age_rating', '<=', $user->age)->get();
+            $request->attributes->set('articles', $allowedArticles);
         }
 
         return $next($request);

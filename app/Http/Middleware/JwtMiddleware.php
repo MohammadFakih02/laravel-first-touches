@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use Closure;
-
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
 
@@ -13,6 +12,7 @@ class JwtMiddleware
     {
         try {
             $user = JWTAuth::parseToken()->authenticate();
+            $request->attributes->set('authenticated_user', $user);
         } catch (JWTException $e) {
             return response()->json(['error' => 'Token not valid'], 401);
         }

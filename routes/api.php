@@ -15,19 +15,19 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware([JwtMiddleware::class])->group(function () {
-    Route::get('user', [AuthController::class, 'getUser']);
+    Route::get('userinfo', [AuthController::class, 'getUser']);
     Route::post('logout', [AuthController::class, 'logout']);
 });
 
-Route::prefix('admin')->middleware([CheckAdminRole::class])->group(function () {
-    Route::get('/', [AdminController::class, 'get_Articles']);
+Route::prefix('admin')->middleware([JwtMiddleware::class,CheckAdminRole::class])->group(function () {
+    Route::get('/{id?}', [AdminController::class, 'get_Articles']);
     Route::post('/', [AdminController::class, 'create_Article']);
     Route::put('/{id}', [AdminController::class, 'update_Article']);
     Route::delete('/{id}', [AdminController::class, 'delete_Article']);
 });
 
-Route::prefix('user')->middleware([AgeCheck::class])->group(function () {
-    Route::get('/', [UserController::class, 'get_Articles']);
+Route::prefix('user')->middleware([JwtMiddleware::class,AgeCheck::class])->group(function () {
+    Route::get('/{id?}', [UserController::class, 'get_Articles']);
     Route::post('/', [UserController::class, 'create_Article']);
     Route::put('/{id}', [UserController::class, 'update_Article']);
     Route::delete('/{id}', [UserController::class, 'delete_Article']);

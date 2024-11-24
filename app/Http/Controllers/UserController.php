@@ -7,10 +7,14 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function get_Articles(Request $request){
-        $articles = UserArticle::all();
-
-        return response()->json(["article"=>$articles],200);
+    public function get_Articles(Request $request, $id = null)
+    {
+        if ($id) {
+            $article = $request->get('article');
+            return response()->json(["article" => $article], 200);
+        }
+        $articles = $request->get('articles');
+        return response()->json(["articles" => $articles], 200);
     }
 
     public function create_Article(Request $request){
