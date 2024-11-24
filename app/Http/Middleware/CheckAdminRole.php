@@ -9,20 +9,11 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class CheckAdminRole
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
     public function handle(Request $request, Closure $next)
     {
         try {
-            // Authenticate the user using the JWT token
             $user = JWTAuth::parseToken()->authenticate();
 
-            // Check if the user has the admin role
             if ($user->role !== 'admin') {
                 return response()->json(['error' => 'Access denied: Admins only'], 403);
             }
@@ -30,7 +21,6 @@ class CheckAdminRole
             return response()->json(['error' => 'Token error: ' . $e->getMessage()], 401);
         }
 
-        // Allow the request to proceed if the user is an admin
         return $next($request);
     }
 }

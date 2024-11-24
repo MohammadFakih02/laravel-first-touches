@@ -6,5 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Article extends Model
 {
-    //
+    protected $fillable = [
+        'name',
+        'content',
+        'age_rating',
+    ];
 }
