@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\UserArticle;
+use App\Models\Article;
 
 class AgeCheck
 {
@@ -18,7 +18,7 @@ class AgeCheck
 
         if ($request->route('id')) {
             $articleId = $request->route('id');
-            $article = UserArticle::find($articleId);
+            $article = Article::find($articleId);
 
             if (!$article) {
                 return response()->json(['error' => 'Article not found'], 404);
@@ -30,7 +30,7 @@ class AgeCheck
 
             $request->attributes->set('article', $article);
         } else {
-            $allowedArticles = UserArticle::where('age_rating', '<=', $user->age)->get();
+            $allowedArticles = Article::where('age_rating', '<=', $user->age)->get();
             $request->attributes->set('articles', $allowedArticles);
         }
 
